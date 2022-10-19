@@ -1,7 +1,7 @@
 import java.util.*;
-import java.io.*;
+import java.io.*;;
 
-public class A {
+public class B {
 	static int N;
 	static HashMap<String, Boolean> mp;
 	public static void main(String args[]) {
@@ -11,7 +11,7 @@ public class A {
 	}
 
 	public static void solve() {
-		Queue<State> q = new LinkedList<>();
+		PriorityQueue<State> q = new PriorityQueue<>();
 		q.add(new State(N, N, 0, 0, true, null));
 		State ans = null;
 		while(!q.isEmpty()) {
@@ -66,13 +66,18 @@ public class A {
 			ans=ans.prev;
 		}
 		Collections.reverse(ansList);
-		ansList.forEach(System.out::println);
+		ansList.forEach( i -> {
+			System.out.println("M".repeat(i.lm)+"_".repeat(N-i.lm) + " " +
+			"C".repeat(i.lc)+"_".repeat(N-i.lc) + " ================== " +
+			"M".repeat(i.rm)+"_".repeat(N-i.rm) + " " + "C".repeat(i.rc)+"_".repeat(N-i.rc));
+		});
 	}
 
-	static class State {
+	static class State implements Comparable<State>{
 		int lc, lm, rc, rm;
 		boolean isLeft;
 		State prev;
+		int depth = 0;
 
 		public State() {
 		}
@@ -84,11 +89,29 @@ public class A {
 			this.rm = rm;
 			this.isLeft = isLeft;
 			this.prev = prev;
+			if(prev != null)
+				this.depth = prev.depth + 1;
 		}
 
 
 		@Override public String toString() {
 			return "{" + lc + "," + lm + "," + rc + "," + rm + " " + isLeft + "}";
+		}
+
+		@Override public int compareTo(State o) {
+			return Double.compare(g() + h(), o.g() + o.h());
+		}
+
+		public void setDepth(int depth) {
+			this.depth = depth;
+		}
+
+		public int g() {
+			return depth;
+		}
+
+		public double h() {
+			return (lc + rc) / 2.0;
 		}
 
 		public boolean finished() {
